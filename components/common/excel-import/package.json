@@ -1,0 +1,27 @@
+{
+  "name": "@form-create/component-excel-import",
+  "version": "0.1.0",
+  "description": "Excel import steps component",
+  "main": "./dist/index.min.js",
+  "module": "./dist/index.esm.js",
+  "unpkg": "./dist/index.min.js",
+  "jsdelivr": "./dist/index.min.js",
+  "scripts": {
+    "clean": "rimraf dist/",
+    "bili": "cross-env bili",
+    "build": "npm-run-all clean bili"
+  },
+  "files": ["README.md", "package.json", "LICENSE", "src", "dist"],
+  "keywords": ["form-create", "excel", "import"],
+  "repository": {"type": "git", "url": "git+https://github.com/xaboy/form-create.git"},
+  "author": "xaboy",
+  "license": "MIT",
+  "bugs": {"url": "https://github.com/xaboy/form-create/issues"},
+  "homepage": "http://www.form-create.com",
+  "publishConfig": {"access": "public"},
+  "buildFormCreateOptions": {
+    "name": "@form-create/component-excel-import",
+    "exportName": "FcExcelImport",
+    "formats": ["umd", "esm"]
+  }
+}
