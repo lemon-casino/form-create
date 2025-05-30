@@ -1,74 +1,87 @@
 <template>
-  <el-dialog v-model="show" title="Import Excel" width="600px">
-    <el-steps :active="step" simple>
-      <el-step title="Select" />
-      <el-step title="Preview" />
-      <el-step title="Map" />
-      <el-step title="Import" />
+  <el-dialog v-model="visible" :title="title" width="800px" :close-on-click-modal="false">
+    <el-steps :active="step" finish-status="success" simple class="mb-3">
+      <el-step title="选择EXCEL表" />
+      <el-step title="数据预览" />
+      <el-step title="导入设置" />
+      <el-step title="导入数据" />
     </el-steps>
-    <div class="body">
-      <StepSelectFile v-if="step===0" @select-file="loadFile" />
-      <StepPreviewData v-if="step===1" :data="excelRows" />
-      <StepImportSettings v-if="step===2" :data="excelRows" :fields="fields" :map="mapping" @update-map="v=>mapping=v" />
-      <StepImportData v-if="step===3" :status="status" :total="excelRows.length" :success="success" />
-    </div>
+
+    <component :is="currentComp" v-bind="stepProps" @select-file="onFile" @update-mapping="onMap" />
+
     <template #footer>
-      <el-button @click="close">Cancel</el-button>
-      <el-button v-if="step>0" @click="step--">Prev</el-button>
-      <el-button v-if="step<3" type="primary" :disabled="!canNext" @click="next">Next</el-button>
-      <el-button v-if="step===3" type="primary" @click="close">Done</el-button>
+      <el-button @click="visible=false">取消</el-button>
+      <el-button v-if="step>0" @click="prev">上一步</el-button>
+      <el-button v-if="step<3" type="primary" :disabled="!canNext" @click="next">下一步</el-button>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import XLSX from 'xlsx'
-import StepSelectFile from './StepSelectFile.vue'
-import StepPreviewData from './StepPreviewData.vue'
-import StepImportSettings from './StepImportSettings.vue'
-import StepImportData from './StepImportData.vue'
+import { readExcel } from '@form-create/utils'
+import StepSelectFile from './steps/StepSelectFile.vue'
+import StepPreviewData from './steps/StepPreviewData.vue'
+import StepImportSettings from './steps/StepImportSettings.vue'
+import StepImportData from './steps/StepImportData.vue'
 
 const props = defineProps({
   modelValue: Boolean,
-  fields: Array
+  columns: Array,
+  tableTitle: String,
+  onImport: Function
 })
-const emit = defineEmits(['update:modelValue','import'])
-const show = computed({get:()=>props.modelValue,set:v=>emit('update:modelValue',v)})
+const emit = defineEmits(['update:modelValue','imported'])
+
+const visible = computed({
+  get:()=>props.modelValue,
+  set:v=>emit('update:modelValue',v)
+})
+
+const title = computed(()=>'批量导入'+(props.tableTitle||''))
 const step = ref(0)
-const excelRows = ref([])
+const file = ref(null)
+const data = ref([])
 const mapping = ref({})
 const status = ref('idle')
-const success = ref(0)
 
-function close(){emit('update:modelValue',false)}
+const currentComp = computed(()=>[
+  StepSelectFile,
+  StepPreviewData,
+  StepImportSettings,
+  StepImportData
+][step.value])
+
+const stepProps = computed(()=>({
+  excelData:data.value,
+  columns:props.columns,
+  columnMapping:mapping.value,
+  status:status.value
+}))
+
+function prev(){ if(step.value>0) step.value-- }
+
+async function next(){
+  if(step.value===2){
+    status.value='importing'
+    if(props.onImport){
+      await props.onImport(data.value)
+    }
+    status.value='success'
+  }
+  if(step.value<3) step.value++
+}
+
 const canNext = computed(()=>{
-  if(step.value===0) return excelRows.value.length>0
+  if(step.value===0) return !!file.value
+  if(step.value===1) return data.value.length>0
   if(step.value===2) return Object.keys(mapping.value).length>0
   return true
 })
-function next(){
-  if(step.value===2){
-    status.value='importing'
-    emit('import', excelRows.value.map(r=>{
-      const obj={};
-      Object.keys(mapping.value).forEach(k=>{obj[mapping.value[k]]=r[k]})
-      return obj
-    }))
-    success.value=excelRows.value.length
-    status.value='success'
-  }
-  step.value++
-}
-async function loadFile(file){
-  const buf = await file.arrayBuffer()
-  const wb = XLSX.read(new Uint8Array(buf),{type:'array'})
-  const sheet = wb.SheetNames[0]
-  excelRows.value = XLSX.utils.sheet_to_json(wb.Sheets[sheet],{defval:''})
-  step.value=1
-}
-</script>
 
-<style scoped>
-.body{margin:20px 0}
-</style>
+async function onFile(f){
+  file.value=f
+  data.value=await readExcel(f)
+}
+function onMap(m){ mapping.value=m }
+</script>

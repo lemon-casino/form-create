@@ -5,12 +5,12 @@ import XLSX from 'xlsx';
  * @param {ArrayBuffer|File} input
  * @returns {Array<Object>} parsed data
  */
-export function readExcel(input) {
+export async function readExcel(input) {
   let buffer;
   if (input instanceof ArrayBuffer) {
     buffer = input;
   } else if (input && typeof input.arrayBuffer === 'function') {
-    buffer = input.arrayBuffer();
+    buffer = await input.arrayBuffer();
   } else {
     throw new Error('Unsupported input type for readExcel');
   }
