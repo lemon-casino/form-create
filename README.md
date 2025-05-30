@@ -142,9 +142,8 @@ const rows = readExcel(file)
 writeExcel(rows, 'table.xlsx')
 ```
 
+
 A simplified Excel import dialog is provided via `@form-create/component-excel-import`. It presents steps for selecting a file, previewing data, mapping columns and performing the import.
-
-
 
 ## 联系
 ![http://static.form-create.com/file/img/support.jpg](http://static.form-create.com/file/img/support.jpg)
