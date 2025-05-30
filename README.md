@@ -125,6 +125,26 @@ npm install @form-create/element-ui@next
 ![https://raw.githubusercontent.com/xaboy/form-create/dev/images/sample110.jpg](https://raw.githubusercontent.com/xaboy/form-create/dev/images/sample110.jpg)
 </details>
 
+## Excel Import/Export
+
+Starting from this version, form-create provides basic helpers for reading
+and writing Excel files. Utilities `readExcel` and `writeExcel` are exported
+from `@form-create/utils` and rely on the [xlsx](https://github.com/SheetJS/sheetjs)
+library.
+
+```js
+import { readExcel, writeExcel } from '@form-create/utils'
+
+// read ArrayBuffer or File
+const rows = readExcel(file)
+
+// export data
+writeExcel(rows, 'table.xlsx')
+```
+
+A simplified Excel import dialog is provided via `@form-create/component-excel-import`. It presents steps for selecting a file, previewing data, mapping columns and performing the import.
+
+
 
 ## 联系
 ![http://static.form-create.com/file/img/support.jpg](http://static.form-create.com/file/img/support.jpg)

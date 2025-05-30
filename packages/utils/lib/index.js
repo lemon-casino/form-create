@@ -11,3 +11,4 @@ export {default as is} from './type';
 export {default as uniqueId} from './unique';
 export {default as getSlot} from './slot';
 export {default as deepSet} from './deepset';
+export {readExcel, writeExcel} from './excel';
