@@ -11,6 +11,7 @@
     "bili": "cross-env bili",
     "build": "npm-run-all clean bili"
   },
+
   "files": [
     "README.md",
     "package.json",

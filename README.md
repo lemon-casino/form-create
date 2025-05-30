@@ -141,12 +141,10 @@ const rows = readExcel(file)
 // export data
 writeExcel(rows, 'table.xlsx')
 ```
-
 An optional import dialog component is provided via
 `@form-create/component-excel-import` which implements a four step workflow for
 selecting a file, previewing, mapping fields and importing data into a table
 form.
-
 
 ## 联系
 ![http://static.form-create.com/file/img/support.jpg](http://static.form-create.com/file/img/support.jpg)
