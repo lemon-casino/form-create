@@ -1,4 +1,5 @@
 import {defineComponent, reactive, markRaw, nextTick} from 'vue';
+import './style.css';
 
 const NAME = 'fcSubForm';
 
@@ -25,6 +26,10 @@ export default defineComponent({
         syncDisabled: {
             type: Boolean,
             default: true
+        },
+        scroll: {
+            type: Boolean,
+            default: false
         },
         formCreateInject: Object,
     },
@@ -64,13 +69,14 @@ export default defineComponent({
     },
     render() {
         const Type = this.form;
-        return <Type
+        const form = <Type
             disabled={this.disabled}
             onUpdate:modelValue={this.formData}
             modelValue={this.modelValue}
             onEmit-event={this.$emit}
             onUpdate:api={this.add$f}
             rule={this.rule}
-            option={this.options} extendOption={true}/>
+            option={this.options} extendOption={true}/>;
+        return this.scroll ? <div class="fc-sub-form-scroll">{form}</div> : form
     }
 })
